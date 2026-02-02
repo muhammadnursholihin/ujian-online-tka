@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TKA SYSTEM ULTIMATE - 2026</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body oncontextmenu="return false" oncopy="return false" oncut="return false" onpaste="return false">
+
+    <div id="login-overlay" class="modal-bg">
+        <div class="login-card">
+            <i class="fas fa-user-shield fa-3x" style="color: #2563eb; margin-bottom: 20px;"></i>
+            <h2>Portal Ujian TKA</h2>
+            <input type="text" id="username" placeholder="Username">
+            <input type="password" id="password" placeholder="Password">
+            <button onclick="prosesLogin()" class="btn-primary">Masuk</button>
+            <p style="font-size: 10px; margin-top: 15px; color: #64748b;">Admin: admin | admin123</p>
+        </div>
+    </div>
+
+    <div class="dashboard" id="main-dashboard" style="display: none;">
+        <nav class="sidebar no-print">
+            <div class="logo"><i class="fas fa-university"></i> <span>TKA SYSTEM</span></div>
+            <div class="user-info">
+                <i class="fas fa-user-circle fa-2x"></i>
+                <div><strong id="user-active">User</strong><br><small id="role-display">ROLE</small></div>
+            </div>
+            <ul class="nav-links">
+                <li id="link-admin" onclick="showPage('admin')"><i class="fas fa-database"></i> Bank Soal</li>
+                <li id="link-users" onclick="showPage('users')"><i class="fas fa-users"></i> Data Siswa</li>
+                <li id="link-settings" onclick="showPage('settings')"><i class="fas fa-cog"></i> Pengaturan</li>
+                <li id="link-rekap" onclick="showPage('rekap')"><i class="fas fa-file-alt"></i> Rekap Nilai</li>
+                <li id="link-ujian" onclick="showPage('ujian')"><i class="fas fa-edit"></i> Ujian</li>
+                <li onclick="logout()" style="margin-top: 50px; color: #ef4444; cursor:pointer;"><i class="fas fa-power-off"></i> Keluar</li>
+            </ul>
+        </nav>
+
+        <main class="content">
+            <section id="admin-page" class="page">
+                <h2>Kelola Bank Soal</h2>
+                <div class="admin-grid">
+                    <div class="card no-print">
+                        <h3>Input Soal</h3>
+                        <input type="text" id="in-mapel" placeholder="Ketik Nama Mapel (Contoh: Fisika)">
+                        <select id="in-tipe" onchange="toggleInputTipe()">
+                            <option value="PG">Pilihan Ganda</option>
+                            <option value="ESSAY">Essay</option>
+                        </select>
+                        <textarea id="in-tanya" placeholder="Pertanyaan..."></textarea>
+                        <div id="wrap-pg">
+                            <input type="text" id="in-a" placeholder="Opsi A">
+                            <input type="text" id="in-b" placeholder="Opsi B">
+                            <input type="text" id="in-c" placeholder="Opsi C">
+                            <input type="text" id="in-d" placeholder="Opsi D">
+                            <select id="in-kunci-pg"><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select>
+                        </div>
+                        <input type="text" id="in-kunci-lain" placeholder="Kunci Jawaban" style="display:none;">
+                        <button onclick="simpanSoal()" class="btn-success" style="width:100%"><i class="fas fa-save"></i> Simpan Soal</button>
+                    </div>
+                    <div class="card">
+                        <table id="tabel-soal">
+                            <thead><tr><th>No</th><th>Mapel</th><th>Tipe</th><th>Soal</th><th>Aksi</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="users-page" class="page" style="display:none;">
+                <h2>Kelola Akun Siswa</h2>
+                <div class="card no-print">
+                    <h3 id="form-user-title">Tambah Siswa</h3>
+                    <input type="hidden" id="s-id">
+                    <input type="text" id="s-nama" placeholder="Nama Lengkap">
+                    <input type="text" id="s-user" placeholder="Username">
+                    <input type="text" id="s-pass" placeholder="Password">
+                    <div style="display:flex; gap:10px;">
+                        <button onclick="simpanSiswa()" class="btn-primary" id="btn-user-save">Simpan</button>
+                        <button onclick="resetUserForm()" class="btn-primary" style="background:#64748b; display:none;" id="btn-user-cancel">Batal</button>
+                    </div>
+                </div>
+                <div class="card">
+                    <table id="tabel-siswa">
+                        <thead><tr><th>Nama</th><th>User</th><th>Pass</th><th>Status</th><th>Aksi</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="rekap-page" class="page" style="display:none;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2>Rekap Nilai</h2>
+                    <div class="no-print">
+                        <button onclick="hapusSemuaRekap()" class="btn-primary" style="background:var(--danger); width:auto; margin-right:10px;">Reset</button>
+                        <button onclick="window.print()" class="btn-primary" style="width:auto;">Cetak</button>
+                    </div>
+                </div>
+                <div class="card"><table id="tabel-rekap"><thead><tr><th>Nama</th><th>Skor</th><th>Waktu</th><th>Detail</th><th>Aksi</th></tr></thead><tbody></tbody></table></div>
+            </section>
+
+            <section id="settings-page" class="page" style="display:none;">
+                <h2>Pengaturan</h2>
+                <div class="card">
+                    <label>Token Ujian:</label><input type="text" id="set-token">
+                    <label>Durasi (Menit):</label><input type="number" id="set-durasi">
+                    <label>Batas Pindah Tab (Toleransi):</label><input type="number" id="set-toleransi">
+                    <button onclick="simpanSettings()" class="btn-success">Simpan Pengaturan</button>
+                </div>
+            </section>
+
+            <section id="ujian-page" class="page" style="display:none;">
+                <div id="timer-box" class="badge-timer">--:--</div>
+                <div id="warning-box" class="badge-warning" style="display:none;">!</div>
+                <div id="render-soal-ujian"></div>
+                <button onclick="submitUjian()" class="btn-primary" style="margin-top:20px;">Kirim Jawaban</button>
+            </section>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
